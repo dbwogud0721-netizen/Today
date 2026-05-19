@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { colors } from '../constants/colors';
-import { getLetters } from '../storage/letterStorage';
+import { subscribeLetters } from '../storage/letterStorage';
 import { Letter, EMOTIONS } from '../types/letter';
 import BottomNav from '../components/BottomNav';
 import type { TabScreen } from '../App';
@@ -17,7 +17,7 @@ function getMonthStr(iso: string) {
 
 export default function StatsScreen({ onTab, currentTab }: Props) {
   const [letters, setLetters] = useState<Letter[]>([]);
-  useEffect(() => { setLetters(getLetters()); }, []);
+  useEffect(() => subscribeLetters(setLetters), []);
 
   const total    = letters.length;
   const favCount = letters.filter((l) => l.isFavorite).length;

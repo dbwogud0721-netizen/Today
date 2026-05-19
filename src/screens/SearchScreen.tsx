@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { colors } from '../constants/colors';
-import { getLetters } from '../storage/letterStorage';
+import { subscribeLetters } from '../storage/letterStorage';
 import { Letter, EMOTIONS, WEATHERS } from '../types/letter';
 import LetterCard from '../components/LetterCard';
 import BottomNav from '../components/BottomNav';
@@ -20,11 +20,11 @@ export default function SearchScreen({ onOpen, onTab, currentTab }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setLetters(getLetters());
     inputRef.current?.focus();
+    return subscribeLetters(setLetters);
   }, []);
 
-  const refresh = () => setLetters(getLetters());
+  const refresh = () => {};
 
   const results = useMemo(() => {
     let list = letters;

@@ -1,6 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { colors } from '../constants/colors';
-import { getSettings, saveSettings, exportLetters, importLetters, getLetters } from '../storage/letterStorage';
+import { getSettings, saveSettings, exportLetters, importLetters, subscribeLetters } from '../storage/letterStorage';
 import BottomNav from '../components/BottomNav';
 import type { TabScreen } from '../App';
 
@@ -20,7 +20,8 @@ export default function SettingsScreen({ onTab, currentTab }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [importMsg, setImportMsg] = useState('');
 
-  const letterCount = getLetters().length;
+  const [letterCount, setLetterCount] = useState(0);
+  useEffect(() => subscribeLetters((ls) => setLetterCount(ls.length)), []);
 
   /* PIN flow */
   const startPinChange = () => { setPinStep('current'); setPinInput(''); setPinMsg(''); };
@@ -48,9 +49,9 @@ export default function SettingsScreen({ onTab, currentTab }: Props) {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (ev) => {
+    reader.onload = async (ev) => {
       try {
-        const count = importLetters(ev.target!.result as string);
+        const count = await importLetters(ev.target!.result as string);
         setImportMsg(`✓ ${count}개의 편지를 불러왔어요.`);
         setTimeout(() => setImportMsg(''), 3000);
       } catch {
@@ -192,7 +193,6 @@ const s: Record<string, React.CSSProperties> = {
     cursor: 'pointer',
     background: 'none',
     border: 'none',
-    borderBottom: `1px solid ${colors.borderLight}`,
     textAlign: 'left',
   } as React.CSSProperties,
   rowBtnLabel: { fontSize: '14px', color: colors.text },

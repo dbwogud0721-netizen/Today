@@ -6,7 +6,7 @@ import { updateLetter } from '../storage/letterStorage';
 interface Props {
   letter: Letter;
   onPress: () => void;
-  onRefresh?: () => void;
+  onRefresh?: () => void; // kept for API compatibility
 }
 
 function fmtDate(iso: string) {
@@ -14,14 +14,13 @@ function fmtDate(iso: string) {
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
 }
 
-export default function LetterCard({ letter, onPress, onRefresh }: Props) {
+export default function LetterCard({ letter, onPress }: Props) {
   const [hov, setHov] = useState(false);
   const locked = isLocked(letter);
 
   const toggleFav = (e: React.MouseEvent) => {
     e.stopPropagation();
-    updateLetter({ ...letter, isFavorite: !letter.isFavorite });
-    onRefresh?.();
+    void updateLetter({ ...letter, isFavorite: !letter.isFavorite });
   };
 
   const preview = letter.content.length > 65

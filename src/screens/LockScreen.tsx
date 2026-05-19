@@ -89,7 +89,9 @@ export default function LockScreen({ onUnlock }: Props) {
       <div style={s.inner}>
         {/* Title block */}
         <div style={s.titleBlock}>
-          <h1 style={s.appName}>오늘, 하루</h1>
+          <h1 style={s.appName}>
+            오늘, 하루<span style={{ fontSize: '11px', fontWeight: '600', letterSpacing: '1px', color: 'rgba(253,246,232,0.85)', marginLeft: '7px', verticalAlign: 'bottom', fontFamily: "'Noto Serif KR', serif", lineHeight: 1 }}>To. gh</span>
+          </h1>
           <p style={s.tagline}>당신의 하루를 보관합니다.</p>
         </div>
 

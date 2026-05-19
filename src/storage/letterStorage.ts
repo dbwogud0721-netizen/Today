@@ -1,11 +1,15 @@
+import {
+  collection, doc, setDoc, deleteDoc,
+  query, orderBy, onSnapshot, getDocs,
+} from 'firebase/firestore';
+import { db } from '../firebase';
 import { Letter } from '../types/letter';
 
-const LETTERS_KEY = 'today_haru_letters';
+const COL = 'letters';
 const SETTINGS_KEY = 'today_haru_settings';
+const LEGACY_KEY   = 'today_haru_letters';
 
-export interface AppSettings {
-  pin: string;
-}
+export interface AppSettings { pin: string; }
 
 export function getSettings(): AppSettings {
   try {
@@ -20,32 +24,35 @@ export function saveSettings(s: AppSettings): void {
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
 }
 
-export function getLetters(): Letter[] {
-  try {
-    const raw = localStorage.getItem(LETTERS_KEY);
-    return raw ? (JSON.parse(raw) as Letter[]) : [];
-  } catch {
-    return [];
-  }
+/* Real-time subscription — returns unsubscribe fn */
+export function subscribeLetters(cb: (letters: Letter[]) => void): () => void {
+  const q = query(collection(db, COL), orderBy('createdAt', 'desc'));
+  return onSnapshot(q, (snap) => {
+    cb(snap.docs.map((d) => d.data() as Letter));
+  });
 }
 
-export function saveLetter(letter: Letter): void {
-  const list = getLetters();
-  localStorage.setItem(LETTERS_KEY, JSON.stringify([letter, ...list]));
+function stripUndefined<T extends object>(obj: T): T {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([, v]) => v !== undefined)
+  ) as T;
 }
 
-export function updateLetter(updated: Letter): void {
-  const list = getLetters().map((l) => (l.id === updated.id ? updated : l));
-  localStorage.setItem(LETTERS_KEY, JSON.stringify(list));
+export async function saveLetter(letter: Letter): Promise<void> {
+  await setDoc(doc(db, COL, letter.id), stripUndefined(letter));
 }
 
-export function deleteLetter(id: string): void {
-  const list = getLetters().filter((l) => l.id !== id);
-  localStorage.setItem(LETTERS_KEY, JSON.stringify(list));
+export async function updateLetter(updated: Letter): Promise<void> {
+  await setDoc(doc(db, COL, updated.id), stripUndefined(updated));
 }
 
-export function exportLetters(): void {
-  const letters = getLetters();
+export async function deleteLetter(id: string): Promise<void> {
+  await deleteDoc(doc(db, COL, id));
+}
+
+export async function exportLetters(): Promise<void> {
+  const snap = await getDocs(query(collection(db, COL), orderBy('createdAt', 'desc')));
+  const letters = snap.docs.map((d) => d.data() as Letter);
   const json = JSON.stringify({ letters, exportedAt: new Date().toISOString() }, null, 2);
   const blob = new Blob([json], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -56,11 +63,25 @@ export function exportLetters(): void {
   URL.revokeObjectURL(url);
 }
 
-export function importLetters(jsonStr: string): number {
+export async function importLetters(jsonStr: string): Promise<number> {
   const data = JSON.parse(jsonStr);
   const letters: Letter[] = Array.isArray(data) ? data : (data.letters ?? []);
-  localStorage.setItem(LETTERS_KEY, JSON.stringify(letters));
+  await Promise.all(letters.map((l) => setDoc(doc(db, COL, l.id), l)));
   return letters.length;
+}
+
+/* One-time migration: moves localStorage letters to Firestore */
+export async function migrateFromLocalStorage(): Promise<void> {
+  try {
+    const raw = localStorage.getItem(LEGACY_KEY);
+    if (!raw) return;
+    const letters: Letter[] = JSON.parse(raw);
+    if (!letters.length) { localStorage.removeItem(LEGACY_KEY); return; }
+    await Promise.all(letters.map((l) => setDoc(doc(db, COL, l.id), l)));
+    localStorage.removeItem(LEGACY_KEY);
+  } catch {
+    /* ignore migration errors */
+  }
 }
 
 export async function resizeImageFile(file: File): Promise<string> {
@@ -69,13 +90,11 @@ export async function resizeImageFile(file: File): Promise<string> {
     const url = URL.createObjectURL(file);
     img.onload = () => {
       const MAX = 600;
-      let w = img.width;
-      let h = img.height;
+      let w = img.width, h = img.height;
       if (w > h && w > MAX) { h = (h * MAX) / w; w = MAX; }
       else if (h > MAX) { w = (w * MAX) / h; h = MAX; }
       const canvas = document.createElement('canvas');
-      canvas.width = w;
-      canvas.height = h;
+      canvas.width = w; canvas.height = h;
       canvas.getContext('2d')!.drawImage(img, 0, 0, w, h);
       URL.revokeObjectURL(url);
       resolve(canvas.toDataURL('image/jpeg', 0.65));

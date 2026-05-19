@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import LockScreen from './screens/LockScreen';
 import HomeScreen from './screens/HomeScreen';
 import WriteScreen from './screens/WriteScreen';
@@ -7,6 +7,7 @@ import SearchScreen from './screens/SearchScreen';
 import StatsScreen from './screens/StatsScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import { Letter } from './types/letter';
+import { migrateFromLocalStorage } from './storage/letterStorage';
 
 export type TabScreen = 'home' | 'search' | 'stats' | 'settings';
 
@@ -19,6 +20,8 @@ export type Screen =
 export default function App() {
   const [screen, setScreen] = useState<Screen>({ name: 'lock' });
   const [homeKey, setHomeKey] = useState(0);
+
+  useEffect(() => { void migrateFromLocalStorage(); }, []);
 
   const navigate = useCallback((s: Screen) => {
     if (s.name === 'home') setHomeKey((k) => k + 1);

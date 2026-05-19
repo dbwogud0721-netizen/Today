@@ -27,15 +27,15 @@ export default function LetterDetailScreen({ letter: initial, onBack }: Props) {
   const [letter, setLetter] = useState(initial);
   const locked = isLocked(letter);
 
-  const toggleFav = () => {
+  const toggleFav = async () => {
     const updated = { ...letter, isFavorite: !letter.isFavorite };
-    updateLetter(updated);
     setLetter(updated);
+    await updateLetter(updated);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!window.confirm('이 편지를 삭제할까요?\n삭제한 편지는 복구할 수 없어요.')) return;
-    deleteLetter(letter.id);
+    await deleteLetter(letter.id);
     onBack();
   };
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { colors } from '../constants/colors';
-import { getLetters } from '../storage/letterStorage';
+import { subscribeLetters } from '../storage/letterStorage';
 import { Letter } from '../types/letter';
 import LetterCard from '../components/LetterCard';
 import BottomNav from '../components/BottomNav';
@@ -26,8 +26,8 @@ export default function HomeScreen({ onWrite, onOpen, onTab, currentTab }: Props
   const [filter, setFilter]   = useState<Filter>('all');
   const [search, setSearch]   = useState('');
 
-  useEffect(() => { setLetters(getLetters()); }, []);
-  const refresh = () => setLetters(getLetters());
+  useEffect(() => subscribeLetters(setLetters), []);
+  const refresh = () => {};
 
   const filtered = useMemo(() => {
     let list = letters;

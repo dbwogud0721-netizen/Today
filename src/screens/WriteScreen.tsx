@@ -39,13 +39,13 @@ export default function WriteScreen({ onBack }: Props) {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!title.trim()) { alert('제목을 입력해주세요.'); return; }
     if (!content.trim()) { alert('편지 내용을 적어주세요.'); return; }
     if (capsule && !capsDate) { alert('타임캡슐 열람 날짜를 설정해주세요.'); return; }
     setSaving(true);
     try {
-      saveLetter({
+      await saveLetter({
         id: Date.now().toString(),
         title:    title.trim(),
         content:  content.trim(),
