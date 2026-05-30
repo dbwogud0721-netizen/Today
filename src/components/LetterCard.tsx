@@ -46,8 +46,8 @@ export default function LetterCard({ letter, onPress }: Props) {
       <div style={{
         ...s.stripe,
         background: locked
-          ? `linear-gradient(90deg, ${colors.capsule}, #BFA882)`
-          : `linear-gradient(90deg, ${colors.accent}, ${colors.goldLight})`,
+          ? `linear-gradient(90deg, #9CA3AF, #D1D5DB)`
+          : `linear-gradient(90deg, ${colors.accent}, ${colors.gold})`,
       }} />
 
       <div style={s.body}>
@@ -171,17 +171,17 @@ const s: Record<string, React.CSSProperties> = {
     lineHeight: 1.2,
     padding: '2px 6px',
     borderRadius: '8px',
-    backgroundColor: `rgba(196,144,96,0.1)`,
+    backgroundColor: `rgba(124,58,237,0.08)`,
   },
   locBadge: {
     fontSize: '11px',
     color: colors.textSub,
-    backgroundColor: `rgba(196,144,96,0.1)`,
+    backgroundColor: `rgba(124,58,237,0.06)`,
   },
   capsBadge: {
     fontSize: '11px',
     color: colors.capsule,
-    backgroundColor: `rgba(139,110,69,0.1)`,
+    backgroundColor: `rgba(124,58,237,0.1)`,
   },
   preview: {
     fontSize: '13px',
