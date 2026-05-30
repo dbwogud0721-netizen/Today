@@ -190,7 +190,7 @@ export default function WriteScreen({ onBack, onSave, initialLetter }: Props) {
 const s: Record<string, React.CSSProperties> = {
   container: {
     height: '100vh',
-    backgroundColor: colors.bg,
+    backgroundColor: `rgba(249,240,225,0.5)`,
     display: 'flex',
     flexDirection: 'column',
     overflow: 'hidden',
@@ -237,7 +237,7 @@ const s: Record<string, React.CSSProperties> = {
     padding: '10px 12px',
     borderRadius: '10px',
     border: `1px solid ${colors.borderLight}`,
-    backgroundColor: colors.bg,
+    backgroundColor: `rgba(249,240,225,0.5)`,
   },
   dateTimeRow: { display: 'flex', gap: '8px', alignItems: 'center' },
   dateInput: {
@@ -246,7 +246,7 @@ const s: Record<string, React.CSSProperties> = {
     padding: '10px 12px',
     borderRadius: '10px',
     border: `1px solid ${colors.borderLight}`,
-    backgroundColor: colors.bg,
+    backgroundColor: `rgba(249,240,225,0.5)`,
     width: '100%',
   },
   capsuleRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' },
