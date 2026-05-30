@@ -6,7 +6,6 @@ export interface Letter {
   emotion?: string;
   weather?: string;
   tags?: string[];
-  image?: string;       // base64 data URL
   location?: string;
   isFavorite?: boolean;
   timeCapsuleDate?: string; // ISO — locked until this date

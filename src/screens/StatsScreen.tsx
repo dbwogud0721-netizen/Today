@@ -22,7 +22,6 @@ export default function StatsScreen({ onTab, currentTab }: Props) {
   const total    = letters.length;
   const favCount = letters.filter((l) => l.isFavorite).length;
   const capsCount= letters.filter((l) => l.timeCapsuleDate).length;
-  const imgCount = letters.filter((l) => l.image).length;
 
   /* Emotion distribution */
   const emotionCounts = EMOTIONS.map((e) => ({
@@ -57,7 +56,6 @@ export default function StatsScreen({ onTab, currentTab }: Props) {
             { label: '총 편지', value: total,    icon: '✉' },
             { label: '즐겨찾기', value: favCount, icon: '★' },
             { label: '타임캡슐', value: capsCount,icon: '🔒' },
-            { label: '사진 첨부', value: imgCount, icon: '🖼' },
           ].map((item) => (
             <div key={item.label} style={s.summaryCard}>
               <span style={s.summaryIcon}>{item.icon}</span>
@@ -138,7 +136,7 @@ const s: Record<string, React.CSSProperties> = {
   title: { fontSize: '22px', fontWeight: '700', color: colors.text, letterSpacing: '1.5px', fontFamily: "'Noto Serif KR', serif" },
   sub: { fontSize: '12px', color: colors.textMuted, marginTop: '3px' },
   scroll: { flex: 1, overflowY: 'auto', padding: '18px 16px' },
-  summaryRow: { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px', marginBottom: '20px' },
+  summaryRow: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '20px' },
   summaryCard: {
     backgroundColor: colors.card,
     borderRadius: '14px',

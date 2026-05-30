@@ -15,6 +15,7 @@ export type Screen =
   | { name: 'lock' }
   | { name: TabScreen }
   | { name: 'write' }
+  | { name: 'edit'; letter: Letter; from: TabScreen }
   | { name: 'detail'; letter: Letter; from: TabScreen };
 
 export default function App() {
@@ -65,11 +66,21 @@ export default function App() {
   if (screen.name === 'write') {
     return <WriteScreen onBack={() => navigate({ name: 'home' })} />;
   }
+  if (screen.name === 'edit') {
+    return (
+      <WriteScreen
+        initialLetter={screen.letter}
+        onBack={() => navigate({ name: 'detail', letter: screen.letter, from: screen.from })}
+        onSave={(updated) => navigate({ name: 'detail', letter: updated, from: screen.from })}
+      />
+    );
+  }
   if (screen.name === 'detail') {
     return (
       <LetterDetailScreen
         letter={screen.letter}
         onBack={() => navigate({ name: screen.from })}
+        onEdit={() => navigate({ name: 'edit', letter: screen.letter, from: screen.from })}
       />
     );
   }

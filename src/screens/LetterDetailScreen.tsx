@@ -6,6 +6,7 @@ import { Letter, isLocked } from '../types/letter';
 interface Props {
   letter: Letter;
   onBack: () => void;
+  onEdit: () => void;
 }
 
 const DAYS = ['일', '월', '화', '수', '목', '금', '토'];
@@ -23,7 +24,7 @@ function daysUntil(iso: string) {
   return Math.ceil(diff / (1000 * 60 * 60 * 24));
 }
 
-export default function LetterDetailScreen({ letter: initial, onBack }: Props) {
+export default function LetterDetailScreen({ letter: initial, onBack, onEdit }: Props) {
   const [letter, setLetter] = useState(initial);
   const locked = isLocked(letter);
 
@@ -51,6 +52,11 @@ export default function LetterDetailScreen({ letter: initial, onBack }: Props) {
           >
             {letter.isFavorite ? '★' : '☆'}
           </button>
+          {!locked && (
+            <button onClick={onEdit} style={{ ...s.iconBtn, color: colors.textSub }}>
+              수정
+            </button>
+          )}
           <button onClick={handleDelete} style={{ ...s.iconBtn, color: colors.error }}>
             삭제
           </button>
@@ -58,14 +64,6 @@ export default function LetterDetailScreen({ letter: initial, onBack }: Props) {
       </div>
 
       <div style={s.scroll}>
-        {/* Hero image */}
-        {letter.image && (
-          <div style={s.heroWrap}>
-            <img src={letter.image} alt="" style={s.hero} />
-            <div style={s.heroOverlay} />
-          </div>
-        )}
-
         <div style={s.paper}>
           {/* Top seal */}
           <div style={s.seal}>
@@ -148,12 +146,6 @@ const s: Record<string, React.CSSProperties> = {
   headerActions: { display: 'flex', gap: '16px', alignItems: 'center' },
   iconBtn: { fontSize: '18px', cursor: 'pointer', transition: 'color 0.15s', lineHeight: 1 },
   scroll: { flex: 1, overflowY: 'auto', padding: '20px 16px' },
-  heroWrap: { position: 'relative', borderRadius: '16px', overflow: 'hidden', marginBottom: '16px' },
-  hero: { width: '100%', height: '200px', objectFit: 'cover', display: 'block' },
-  heroOverlay: {
-    position: 'absolute', inset: 0,
-    background: 'linear-gradient(to top, rgba(58,37,24,0.4) 0%, transparent 60%)',
-  },
   paper: {
     backgroundColor: colors.cardWarm,
     borderRadius: '20px',

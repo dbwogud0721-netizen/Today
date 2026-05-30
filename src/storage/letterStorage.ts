@@ -84,22 +84,3 @@ export async function migrateFromLocalStorage(): Promise<void> {
   }
 }
 
-export async function resizeImageFile(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.onload = () => {
-      const MAX = 600;
-      let w = img.width, h = img.height;
-      if (w > h && w > MAX) { h = (h * MAX) / w; w = MAX; }
-      else if (h > MAX) { w = (w * MAX) / h; h = MAX; }
-      const canvas = document.createElement('canvas');
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d')!.drawImage(img, 0, 0, w, h);
-      URL.revokeObjectURL(url);
-      resolve(canvas.toDataURL('image/jpeg', 0.65));
-    };
-    img.onerror = reject;
-    img.src = url;
-  });
-}

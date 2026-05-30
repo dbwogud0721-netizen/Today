@@ -103,7 +103,6 @@ export default function LetterCard({ letter, onPress }: Props) {
 
         {/* Footer */}
         <div style={s.footer}>
-          {letter.image && <span style={s.imgIcon}>🖼</span>}
           <span style={s.stamp}>✉</span>
         </div>
       </div>
