@@ -25,6 +25,10 @@ export default function WriteScreen({ onBack, onSave, initialLetter }: Props) {
       ? new Date(initialLetter.createdAt).toISOString().slice(0, 10)
       : new Date().toISOString().slice(0, 10)
   );
+  const [timeStr,  setTimeStr] = useState(() => {
+    const d = initialLetter ? new Date(initialLetter.createdAt) : new Date();
+    return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  });
   const [capsule,  setCapsule] = useState(!!initialLetter?.timeCapsuleDate);
   const [capsDate, setCapsDate]= useState(
     initialLetter?.timeCapsuleDate
@@ -52,7 +56,7 @@ export default function WriteScreen({ onBack, onSave, initialLetter }: Props) {
         id: initialLetter?.id ?? Date.now().toString(),
         title:    title.trim(),
         content:  content.trim(),
-        createdAt: new Date(dateStr + 'T12:00:00').toISOString(),
+        createdAt: new Date(dateStr + 'T' + timeStr + ':00').toISOString(),
         emotion:  emotion || undefined,
         weather:  weather || undefined,
         tags:     tags.length ? tags : undefined,
@@ -98,15 +102,23 @@ export default function WriteScreen({ onBack, onSave, initialLetter }: Props) {
           <TagInput tags={tags} onChange={setTags} />
           <div style={s.metaDivider} />
 
-          {/* Date */}
+          {/* Date & Time */}
           <div style={s.field}>
-            <span style={s.fieldLabel}>날짜</span>
-            <input
-              type="date"
-              style={s.dateInput}
-              value={dateStr}
-              onChange={(e) => setDateStr(e.target.value)}
-            />
+            <span style={s.fieldLabel}>날짜 / 시간</span>
+            <div style={s.dateTimeRow}>
+              <input
+                type="date"
+                style={{ ...s.dateInput, flex: 1 }}
+                value={dateStr}
+                onChange={(e) => setDateStr(e.target.value)}
+              />
+              <input
+                type="time"
+                style={{ ...s.dateInput, width: '110px' }}
+                value={timeStr}
+                onChange={(e) => setTimeStr(e.target.value)}
+              />
+            </div>
           </div>
 
           {/* Location */}
@@ -227,6 +239,7 @@ const s: Record<string, React.CSSProperties> = {
     border: `1px solid ${colors.borderLight}`,
     backgroundColor: `rgba(249,240,225,0.5)`,
   },
+  dateTimeRow: { display: 'flex', gap: '8px', alignItems: 'center' },
   dateInput: {
     fontSize: '14px',
     color: colors.text,
