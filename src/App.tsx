@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import LockScreen from './screens/LockScreen';
 import HomeScreen from './screens/HomeScreen';
 import WriteScreen from './screens/WriteScreen';
@@ -21,13 +21,29 @@ export type Screen =
 export default function App() {
   const [screen, setScreen] = useState<Screen>({ name: 'lock' });
   const [homeKey, setHomeKey] = useState(0);
+  const screenRef = useRef<Screen>({ name: 'lock' });
 
   useEffect(() => { void migrateFromLocalStorage(); }, []);
 
   const navigate = useCallback((s: Screen) => {
     if (s.name === 'home') setHomeKey((k) => k + 1);
     setScreen(s);
+    screenRef.current = s;
+    if (s.name === 'detail') {
+      window.history.pushState({ appScreen: 'detail' }, '');
+    }
   }, []);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const current = screenRef.current;
+      if (current.name === 'detail') {
+        navigate({ name: current.from });
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [navigate]);
 
   const goTab = useCallback(
     (t: TabScreen) => navigate({ name: t }),
@@ -79,7 +95,7 @@ export default function App() {
     return (
       <LetterDetailScreen
         letter={screen.letter}
-        onBack={() => navigate({ name: screen.from })}
+        onBack={() => window.history.back()}
         onEdit={() => navigate({ name: 'edit', letter: screen.letter, from: screen.from })}
       />
     );
